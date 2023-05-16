@@ -1764,11 +1764,9 @@ class AutoModPresets(ArrayFlags):
 
 @fill_with_flags()
 class AppCommandContext(ArrayFlags):
-    DEFAULT_VALUE = 3
     r"""Wraps up the Discord :class:`AppCommand` context.
 
     .. versionadded:: 2.3
-
 
     .. container:: operations
 
@@ -1826,6 +1824,8 @@ class AppCommandContext(ArrayFlags):
         The raw value. You should query flags via the properties
         rather than using this raw value.
     """
+
+    DEFAULT_VALUE = 3
 
     @flag_value
     def guild(self):
