@@ -60,6 +60,7 @@ __all__ = (
     'MemberFlags',
     'AttachmentFlags',
     'RoleFlags',
+    "AppCommandContext",
 )
 
 BF = TypeVar('BF', bound='BaseFlags')
@@ -1772,7 +1773,7 @@ class AppCommandContext(ArrayFlags):
 
         .. describe:: x == y
 
-            Checks if two AppCommand context flags are equal.
+            Checks if two app command context flags are equal.
 
         .. describe:: x != y
 
