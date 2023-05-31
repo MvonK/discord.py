@@ -648,6 +648,9 @@ Decorators
 .. autofunction:: discord.app_commands.private_channel_only
     :decorator:
 
+-- autofunction:: discord.app_commands.allow_contexts
+    :decorator:
+
 .. autofunction:: discord.app_commands.default_permissions
     :decorator:
 
