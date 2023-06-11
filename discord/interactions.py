@@ -984,6 +984,50 @@ class InteractionResponse(Generic[ClientT]):
             self._parent._state.store_view(modal)
         self._response_type = InteractionResponseType.modal
 
+    async def send_iframe(self, custom_id: str, title: str, iframe_path: Optional[str], /) -> None:
+        """|coro|
+
+        Responds to this interaction by sending an iframe modal.
+
+        Parameters
+        -----------
+        custom_id: :class:`str`
+            The custom ID of the iframe.
+        title: :class:`str`
+            The title of the iframe.
+        iframe_path: Optional[:class:`str`]
+            The path to the iframe. If ``None`` is passed then the iframe is removed.
+
+        Raises
+        -------
+        HTTPException
+            Sending the iframe failed.
+        InteractionResponded
+            This interaction has already been responded to before.
+        """
+        if self._response_type:
+            raise InteractionResponded(self._parent)
+
+        parent = self._parent
+
+        adapter = async_context.get()
+        http = parent._state.http
+
+        params = interaction_response_params(
+            InteractionResponseType.iframe.value,
+            {'iframePath': iframe_path, 'title': title, 'custom_id': custom_id},
+        )
+        await adapter.create_interaction_response(
+            parent.id,
+            parent.token,
+            session=parent._session,
+            proxy=http.proxy,
+            proxy_auth=http.proxy_auth,
+            params=params,
+        )
+
+        self._response_type = InteractionResponseType.iframe
+
     async def autocomplete(self, choices: Sequence[Choice[ChoiceT]]) -> None:
         """|coro|
 
