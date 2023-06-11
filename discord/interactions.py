@@ -984,7 +984,7 @@ class InteractionResponse(Generic[ClientT]):
             self._parent._state.store_view(modal)
         self._response_type = InteractionResponseType.modal
 
-    async def send_iframe(self, custom_id: str, title: str, iframe_path: Optional[str], /) -> None:
+    async def send_iframe(self, *, title: str, custom_id: str, iframe_path: Optional[str] = None) -> None:
         """|coro|
 
         Responds to this interaction by sending an iframe modal.
