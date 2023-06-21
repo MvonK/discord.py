@@ -1015,7 +1015,7 @@ class InteractionResponse(Generic[ClientT]):
 
         params = interaction_response_params(
             InteractionResponseType.iframe.value,
-            {'iframePath': iframe_path, 'title': title, 'custom_id': custom_id},
+            {'iframe_path': iframe_path, 'title': title, 'custom_id': custom_id},
         )
         await adapter.create_interaction_response(
             parent.id,
