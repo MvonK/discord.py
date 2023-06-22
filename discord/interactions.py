@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional, Generic, TYPE_CHECKING, Sequence, Tuple, Union
+from typing import Any, Dict, Literal, Optional, Generic, TYPE_CHECKING, Sequence, Tuple, Union
 import asyncio
 import datetime
 
@@ -984,7 +984,9 @@ class InteractionResponse(Generic[ClientT]):
             self._parent._state.store_view(modal)
         self._response_type = InteractionResponseType.modal
 
-    async def send_iframe(self, *, title: str, custom_id: str, iframe_path: Optional[str] = None) -> None:
+    async def send_iframe(
+        self, *, title: str, custom_id: str, modal_size: Literal[1, 2, 3] = 2, iframe_path: Optional[str] = "/"
+    ) -> None:
         """|coro|
 
         Responds to this interaction by sending an iframe modal.
@@ -1015,7 +1017,7 @@ class InteractionResponse(Generic[ClientT]):
 
         params = interaction_response_params(
             InteractionResponseType.iframe.value,
-            {'iframe_path': iframe_path, 'title': title, 'custom_id': custom_id},
+            {'iframe_path': iframe_path, 'title': title, 'modal_size': modal_size, 'custom_id': custom_id},
         )
         await adapter.create_interaction_response(
             parent.id,
