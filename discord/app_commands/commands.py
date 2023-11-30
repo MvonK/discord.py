@@ -50,7 +50,7 @@ from copy import copy as shallow_copy
 
 
 from ..enums import AppCommandOptionType, AppCommandType, ChannelType, Locale
-from ..flags import AppCommandContext
+from ..flags import AppCommandContext, AppIntegrationType
 from .models import Choice
 from .transformers import annotation_to_parameter, CommandParameter, NoneType
 from .errors import AppCommandError, CheckFailure, CommandInvokeError, CommandSignatureMismatch, CommandAlreadyRegistered
@@ -92,6 +92,9 @@ __all__ = (
     'dm_only',
     'private_channel_only',
     'allow_contexts',
+    'guild_install',
+    'user_install',
+    'install_types',
     'default_permissions',
 )
 
@@ -684,6 +687,10 @@ class Command(Generic[GroupT, P, T]):
         self.allowed_contexts: Optional[AppCommandContext] = allowed_contexts or getattr(
             callback, '__discord_app_commands_contexts__', None
         )
+        self.integration_types: Optional[AppIntegrationType] = getattr(
+            callback, '__discord_app_commands_integration_types__', None
+        )
+
         self.nsfw: bool = nsfw
         self.extras: Dict[Any, Any] = extras or {}
 
@@ -1234,6 +1241,9 @@ class ContextMenu:
         self.allowed_contexts: Optional[AppCommandContext] = allowed_contexts or getattr(
             callback, '__discord_app_commands_contexts__', None
         )
+        self.integration_types: Optional[AppIntegrationType] = getattr(
+            callback, '__discord_app_commands_integration_types__', None
+        )
         self.checks: List[Check] = getattr(callback, '__discord_app_commands_checks__', [])
         self.extras: Dict[Any, Any] = extras or {}
 
@@ -1449,6 +1459,7 @@ class Group:
     __discord_app_commands_group_nsfw__: bool = False
     __discord_app_commands_guild_only__: bool = MISSING
     __discord_app_commands_contexts__: Optional[AppCommandContext] = MISSING
+    __discord_app_commands_integration_types__: Optional[AppIntegrationType] = MISSING
     __discord_app_commands_default_permissions__: Optional[Permissions] = MISSING
     __discord_app_commands_has_module__: bool = False
     __discord_app_commands_error_handler__: Optional[
@@ -1518,6 +1529,7 @@ class Group:
         guild_ids: Optional[List[int]] = None,
         guild_only: bool = MISSING,
         allowed_contexts: Optional[AppCommandContext] = MISSING,
+        integration_types: Optional[AppIntegrationType] = MISSING,
         nsfw: bool = MISSING,
         auto_locale_strings: bool = True,
         default_permissions: Optional[Permissions] = MISSING,
@@ -1573,6 +1585,14 @@ class Group:
                 allowed_contexts = cls.__discord_app_commands_contexts__
 
         self.allowed_contexts: Optional[AppCommandContext] = allowed_contexts
+
+        if integration_types is MISSING:
+            if cls.__discord_app_commands_integration_types__ is MISSING:
+                integration_types = None
+            else:
+                integration_types = cls.__discord_app_commands_integration_types__
+
+        self.integration_types: Optional[AppIntegrationType] = integration_types
 
         if nsfw is MISSING:
             nsfw = cls.__discord_app_commands_group_nsfw__
@@ -2599,6 +2619,123 @@ def allow_contexts(
 
         if private_channels is not MISSING:
             allowed_contexts.private_channel = private_channels
+
+        return f
+
+    return inner
+
+
+def guild_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
+    """A decorator that indicates this command should be installed in guilds.
+
+    This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
+
+    Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    Examples
+    ---------
+
+    .. code-block:: python3
+
+        @app_commands.command()
+        @app_commands.guild_install()
+        async def my_guild_install_command(interaction: discord.Interaction) -> None:
+            await interaction.response.send_message('I am installed in guilds by default!')
+    """
+
+    def inner(f: T) -> T:
+        if isinstance(f, (Command, Group, ContextMenu)):
+            integration_types = f.integration_types or AppIntegrationType.none()
+            f.integration_types = integration_types
+        else:
+            integration_types = getattr(f, '__discord_app_commands_integration_types__', None) or AppIntegrationType.none()
+            f.__discord_app_commands_integration_types__ = integration_types  # type: ignore # Runtime attribute assignment
+
+        integration_types.guild_install = True
+
+        return f
+
+    # Check if called with parentheses or not
+    if func is None:
+        # Called with parentheses
+        return inner
+    else:
+        return inner(func)
+
+
+def user_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
+    """A decorator that indicates this command should be installed for users.
+
+    This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
+
+    Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    Examples
+    ---------
+
+    .. code-block:: python3
+
+        @app_commands.command()
+        @app_commands.user_install()
+        async def my_user_install_command(interaction: discord.Interaction) -> None:
+            await interaction.response.send_message('I am installed in users by default!')
+    """
+
+    def inner(f: T) -> T:
+        if isinstance(f, (Command, Group, ContextMenu)):
+            integration_types = f.integration_types or AppIntegrationType.none()
+            f.integration_types = integration_types
+        else:
+            integration_types = getattr(f, '__discord_app_commands_integration_types__', None) or AppIntegrationType.none()
+            f.__discord_app_commands_integration_types__ = integration_types  # type: ignore # Runtime attribute assignment
+
+        integration_types.user_install = True
+
+        return f
+
+    # Check if called with parentheses or not
+    if func is None:
+        # Called with parentheses
+        return inner
+    else:
+        return inner(func)
+
+
+def install_types(
+    guilds: bool = MISSING,
+    users: bool = MISSING,
+) -> Union[T, Callable[[T], T]]:
+    """A decorator that indicates this command should be installed in certain contexts.
+    Valid contexts are guilds and users.
+
+    This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
+
+    Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    Examples
+    ---------
+
+    .. code-block:: python3
+
+        @app_commands.command()
+        @app_commands.install_types(guilds=False, users=True)
+        async def my_command(interaction: discord.Interaction) -> None:
+            await interaction.response.send_message('I am installed in users by default!')
+    """
+
+    def inner(f: T) -> T:
+        if isinstance(f, (Command, Group, ContextMenu)):
+            integration_types = f.integration_types or AppIntegrationType.none()
+            f.integration_types = integration_types
+        else:
+            integration_types = getattr(f, '__discord_app_commands_integration_types__', None) or AppIntegrationType.none()
+            f.__discord_app_commands_integration_types__ = integration_types  # type: ignore # Runtime attribute assignment
+
+        if guilds is not MISSING:
+            integration_types.guild_install = guilds
+
+        if users is not MISSING:
+            integration_types.user_install = users
 
         return f
 
