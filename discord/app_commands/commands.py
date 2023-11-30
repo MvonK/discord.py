@@ -780,6 +780,7 @@ class Command(Generic[GroupT, P, T]):
             base['dm_permission'] = not self.guild_only
             base['default_member_permissions'] = None if self.default_permissions is None else self.default_permissions.value
             base['contexts'] = self.allowed_contexts.to_array() if self.allowed_contexts is not None else None
+            base['integration_types'] = self.integration_types.to_array() if self.integration_types is not None else None
 
         return base
 
@@ -1280,6 +1281,7 @@ class ContextMenu:
             'type': self.type.value,
             'dm_permission': not self.guild_only,
             'contexts': self.allowed_contexts.to_array() if self.allowed_contexts is not None else None,
+            'integration_types': self.integration_types.to_array() if self.integration_types is not None else None,
             'default_member_permissions': None if self.default_permissions is None else self.default_permissions.value,
             'nsfw': self.nsfw,
         }
@@ -1727,6 +1729,7 @@ class Group:
             base['dm_permission'] = not self.guild_only
             base['default_member_permissions'] = None if self.default_permissions is None else self.default_permissions.value
             base['contexts'] = self.allowed_contexts.to_array() if self.allowed_contexts is not None else None
+            base['integration_types'] = self.integration_types.to_array() if self.integration_types is not None else None
 
         return base
 
