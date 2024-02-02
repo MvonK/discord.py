@@ -153,6 +153,7 @@ def handle_message_parameters(
     mention_author: Optional[bool] = None,
     thread_name: str = MISSING,
     channel_payload: Dict[str, Any] = MISSING,
+    applied_tags: Optional[SnowflakeList] = MISSING,
 ) -> MultipartParameters:
     if files is not MISSING and file is not MISSING:
         raise TypeError('Cannot mix file and files keyword arguments.')
@@ -242,6 +243,12 @@ def handle_message_parameters(
                 attachments_payload.append(attachment.to_dict())
 
         payload['attachments'] = attachments_payload
+
+    if applied_tags is not MISSING:
+        if applied_tags is not None:
+            payload['applied_tags'] = applied_tags
+        else:
+            payload['applied_tags'] = []
 
     if channel_payload is not MISSING:
         payload = {
@@ -1156,6 +1163,13 @@ class HTTPClient:
         payload = {k: v for k, v in options.items() if k in valid_keys}
         return self.request(r, reason=reason, json=payload)
 
+    def edit_voice_channel_status(
+        self, status: Optional[str], *, channel_id: int, reason: Optional[str] = None
+    ) -> Response[None]:
+        r = Route('PUT', '/channels/{channel_id}/voice-status', channel_id=channel_id)
+        payload = {'status': status}
+        return self.request(r, reason=reason, json=payload)
+
     def bulk_channel_update(
         self,
         guild_id: Snowflake,
@@ -1749,6 +1763,9 @@ class HTTPClient:
         self, guild_id: Snowflake, payload: widget.EditWidgetSettings, reason: Optional[str] = None
     ) -> Response[widget.WidgetSettings]:
         return self.request(Route('PATCH', '/guilds/{guild_id}/widget', guild_id=guild_id), json=payload, reason=reason)
+
+    def edit_incident_actions(self, guild_id: Snowflake, payload: guild.IncidentData) -> Response[guild.IncidentData]:
+        return self.request(Route('PUT', '/guilds/{guild_id}/incident-actions', guild_id=guild_id), json=payload)
 
     # Invite management
 
