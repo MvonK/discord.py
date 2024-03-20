@@ -198,7 +198,7 @@ class Interaction(Generic[ClientT]):
         self.entitlement_sku_ids: List[int] = [int(x) for x in data.get('entitlement_skus', []) or []]
         self.entitlements: List[Entitlement] = [Entitlement(self._state, x) for x in data.get('entitlements', [])]
         self.authorizing_integration_owners: Dict[int, Snowflake] = {
-            k: int(v) for k, v in data.get('authorizing_integration_owners', {}.items())
+            int(k): int(v) for k, v in data.get('authorizing_integration_owners', {}).items()
         }  # should be Dict[AppIntegrationType, Snowflake] but for now its int, Snowflake until better type for AppIntegrationType is found
 
         self.locale: Locale = try_enum(Locale, data.get('locale', 'en-US'))
