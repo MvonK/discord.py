@@ -27,14 +27,14 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional, Generic, TYPE_CHECKING, Sequence, Tuple, Union, List
+from typing import Any, Dict, Optional, Generic, TYPE_CHECKING, Sequence, Set, Tuple, Union, List
 import asyncio
 import datetime
 
 from discord.types.snowflake import Snowflake
 
 from . import utils
-from .enums import try_enum, Locale, InteractionType, InteractionResponseType
+from .enums import InteractionCallbackEphemerality, try_enum, Locale, InteractionType, InteractionResponseType
 from .errors import InteractionResponded, HTTPException, ClientException, DiscordException
 from .flags import AppIntegrationType, MessageFlags
 from .channel import ChannelType

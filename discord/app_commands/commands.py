@@ -49,7 +49,14 @@ import re
 from copy import copy as shallow_copy
 
 
-from ..enums import AppCommandOptionType, AppCommandType, ChannelType, Locale
+from ..enums import (
+    AppCommandOptionType,
+    AppCommandType,
+    ChannelType,
+    InteractionCallbackEphemerality,
+    InteractionResponseType,
+    Locale,
+)
 from ..flags import AppCommandContext, AppIntegrationType
 from .models import Choice
 from .transformers import annotation_to_parameter, CommandParameter, NoneType
@@ -1985,6 +1992,30 @@ class Group:
             return command
 
         return decorator
+
+
+class CallbackHint:
+    def __init__(
+        self,
+        *,
+        allowed_callback_types: Set[InteractionResponseType] = MISSING,
+        ephemerality: InteractionCallbackEphemerality = MISSING,
+        required_permissions: Permissions = MISSING,
+    ):
+        self.allowed_callback_types = allowed_callback_types
+        self.ephemerality = ephemerality
+        self.required_permissions = required_permissions
+
+    def to_dict(self) -> Dict[str, Any]:
+        res = {}
+        if self.allowed_callback_types is not MISSING:
+            res['allowed_callback_types'] = [t.value for t in self.allowed_callback_types]
+
+        if self.ephemerality is not MISSING:
+            res['ephemerality'] = self.ephemerality.value
+
+        if self.required_permissions is not MISSING:
+            res['required_permissions'] = self.required_permissions.value
 
 
 def command(

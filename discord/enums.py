@@ -56,6 +56,7 @@ __all__ = (
     'PrivacyLevel',
     'InteractionType',
     'InteractionResponseType',
+    'InteractionCallbackEphemerality',
     'NSFWLevel',
     'MFALevel',
     'Locale',
@@ -603,6 +604,11 @@ class InteractionResponseType(Enum):
     autocomplete_result = 8
     modal = 9  # for modals
     premium_required = 10
+
+
+class InteractionCallbackEphemerality(Enum):
+    optional = 0
+    required = 1
 
 
 class VideoQualityMode(Enum):
