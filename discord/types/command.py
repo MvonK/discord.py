@@ -142,6 +142,7 @@ class _BaseApplicationCommand(TypedDict):
     application_id: Snowflake
     name: str
     contexts: List[int]
+    integration_types: List[int]
     dm_permission: NotRequired[Optional[bool]]
     default_member_permissions: NotRequired[Optional[str]]
     nsfw: NotRequired[bool]

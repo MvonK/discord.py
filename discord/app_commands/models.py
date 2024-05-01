@@ -26,7 +26,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from .errors import MissingApplicationID
-from ..flags import AppCommandContext
+from ..flags import AppCommandContext, AppIntegrationType
 from .translator import TranslationContextLocation, TranslationContext, locale_str, Translator
 from ..permissions import Permissions
 from ..enums import (
@@ -190,6 +190,7 @@ class AppCommand(Hashable):
         'default_member_permissions',
         'dm_permission',
         'allowed_contexts',
+        'integration_types',
         'nsfw',
         '_state',
     )
@@ -228,6 +229,12 @@ class AppCommand(Hashable):
         else:
             self.allowed_contexts = AppCommandContext._from_value(allowed_contexts)
 
+        integration_types = data.get('integration_types')
+        if integration_types is None:
+            self.integration_types: Optional[AppIntegrationType] = None
+        else:
+            self.integration_types = AppIntegrationType._from_value(integration_types)
+
         self.nsfw: bool = data.get('nsfw', False)
         self.name_localizations: Dict[Locale, str] = _to_locale_dict(data.get('name_localizations') or {})
         self.description_localizations: Dict[Locale, str] = _to_locale_dict(data.get('description_localizations') or {})
@@ -242,6 +249,7 @@ class AppCommand(Hashable):
             'name_localizations': {str(k): v for k, v in self.name_localizations.items()},
             'description_localizations': {str(k): v for k, v in self.description_localizations.items()},
             'contexts': self.allowed_contexts.to_array() if self.allowed_contexts is not None else None,
+            'integration_types': self.integration_types.to_array() if self.integration_types is not None else None,
             'options': [opt.to_dict() for opt in self.options],
         }  # type: ignore # Type checker does not understand this literal.
 

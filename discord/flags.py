@@ -58,9 +58,10 @@ __all__ = (
     'ChannelFlags',
     'AutoModPresets',
     'MemberFlags',
+    "AppCommandContext",
     'AttachmentFlags',
     'RoleFlags',
-    "AppCommandContext",
+    "AppIntegrationType",
     'SKUFlags',
 )
 
@@ -1843,6 +1844,81 @@ class AppCommandContext(ArrayFlags):
     def private_channel(self):
         """:class:`bool`: Whether the context allows usage in a DM or a GDM channel."""
         return 1 << 2
+
+
+# TODO: cringe, because authorized_integration_owners is a Dict[AppIntegrationType, Snowflake] which cant be represented with ArrayFlags thing
+@fill_with_flags()
+class AppIntegrationType(ArrayFlags):
+    r"""Wraps up the Discord :class:`AppIntegration` type.
+
+    .. versionadded:: 2.3
+
+    .. container:: operations
+
+        .. describe:: x == y
+
+            Checks if two app command context flags are equal.
+
+        .. describe:: x != y
+
+            Checks if two AppCommand context flags are not equal.
+
+        .. describe:: x | y, x |= y
+
+            Returns an AppCommandContext instance with all enabled flags from
+            both x and y.
+
+            .. versionadded:: 2.3
+
+        .. describe:: x & y, x &= y
+
+            Returns an AppCommandContext instance with only flags enabled on
+            both x and y.
+
+            .. versionadded:: 2.3
+
+        .. describe:: x ^ y, x ^= y
+
+            Returns an AppCommandContext instance with only flags enabled on
+            only one of x or y, not on both.
+
+            .. versionadded:: 2.3
+
+        .. describe:: ~x
+
+            Returns an AppCommandContext instance with all flags inverted from x
+
+            .. versionadded:: 2.3
+
+        .. describe:: hash(x)
+
+            Return the flag's hash.
+        .. describe:: iter(x)
+
+            Returns an iterator of ``(name, value)`` pairs. This allows it
+            to be, for example, constructed as a dict or a list of pairs.
+            Note that aliases are not shown.
+
+        .. describe:: bool(b)
+
+            Returns whether any flag is set to ``True``.
+
+    Attributes
+    -----------
+    value: :class:`int`
+        The raw value. You should query flags via the properties
+        rather than using this raw value.
+    """
+
+    @flag_value
+    def guild_install(self):
+        """:class:`bool`: Whether the integration is a guild install."""
+        return 1 << 0
+
+    @flag_value
+    def user_install(self):
+        """:class:`bool`: Whether the integration is a user install."""
+        return 1 << 1
 
 
 @fill_with_flags()
