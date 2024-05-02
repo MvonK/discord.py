@@ -58,10 +58,10 @@ __all__ = (
     'ChannelFlags',
     'AutoModPresets',
     'MemberFlags',
-    "AppCommandContext",
+    'AppCommandContext',
     'AttachmentFlags',
     'RoleFlags',
-    "AppIntegrationType",
+    'AppInstallationType',
     'SKUFlags',
 )
 
@@ -1767,46 +1767,38 @@ class AutoModPresets(ArrayFlags):
 
 @fill_with_flags()
 class AppCommandContext(ArrayFlags):
-    r"""Wraps up the Discord :class:`AppCommand` context.
+    r"""Wraps up the Discord :class:`~discord.app_commands.Command` execution context.
 
-    .. versionadded:: 2.3
+    .. versionadded:: 2.4
 
     .. container:: operations
 
         .. describe:: x == y
 
-            Checks if two app command context flags are equal.
+            Checks if two AppCommandContext flags are equal.
 
         .. describe:: x != y
 
-            Checks if two AppCommand context flags are not equal.
+            Checks if two AppCommandContext flags are not equal.
 
         .. describe:: x | y, x |= y
 
             Returns an AppCommandContext instance with all enabled flags from
             both x and y.
 
-            .. versionadded:: 2.3
-
         .. describe:: x & y, x &= y
 
             Returns an AppCommandContext instance with only flags enabled on
             both x and y.
-
-            .. versionadded:: 2.3
 
         .. describe:: x ^ y, x ^= y
 
             Returns an AppCommandContext instance with only flags enabled on
             only one of x or y, not on both.
 
-            .. versionadded:: 2.3
-
         .. describe:: ~x
 
             Returns an AppCommandContext instance with all flags inverted from x
-
-            .. versionadded:: 2.3
 
         .. describe:: hash(x)
 
@@ -1846,49 +1838,40 @@ class AppCommandContext(ArrayFlags):
         return 1 << 2
 
 
-# TODO: cringe, because authorized_integration_owners is a Dict[AppIntegrationType, Snowflake] which cant be represented with ArrayFlags thing
 @fill_with_flags()
-class AppIntegrationType(ArrayFlags):
-    r"""Wraps up the Discord :class:`AppIntegration` type.
+class AppInstallationType(ArrayFlags):
+    r"""Represents the installation location of an application command.
 
-    .. versionadded:: 2.3
+    .. versionadded:: 2.4
 
     .. container:: operations
 
         .. describe:: x == y
 
-            Checks if two app command context flags are equal.
+            Checks if two AppInstallationType flags are equal.
 
         .. describe:: x != y
 
-            Checks if two AppCommand context flags are not equal.
+            Checks if two AppInstallationType flags are not equal.
 
         .. describe:: x | y, x |= y
 
-            Returns an AppCommandContext instance with all enabled flags from
+            Returns an AppInstallationType instance with all enabled flags from
             both x and y.
-
-            .. versionadded:: 2.3
 
         .. describe:: x & y, x &= y
 
-            Returns an AppCommandContext instance with only flags enabled on
+            Returns an AppInstallationType instance with only flags enabled on
             both x and y.
-
-            .. versionadded:: 2.3
 
         .. describe:: x ^ y, x ^= y
 
-            Returns an AppCommandContext instance with only flags enabled on
+            Returns an AppInstallationType instance with only flags enabled on
             only one of x or y, not on both.
-
-            .. versionadded:: 2.3
 
         .. describe:: ~x
 
-            Returns an AppCommandContext instance with all flags inverted from x
-
-            .. versionadded:: 2.3
+            Returns an AppInstallationType instance with all flags inverted from x
 
         .. describe:: hash(x)
 
@@ -1911,12 +1894,12 @@ class AppIntegrationType(ArrayFlags):
     """
 
     @flag_value
-    def guild_install(self):
+    def guild(self):
         """:class:`bool`: Whether the integration is a guild install."""
         return 1 << 0
 
     @flag_value
-    def user_install(self):
+    def user(self):
         """:class:`bool`: Whether the integration is a user install."""
         return 1 << 1
 
