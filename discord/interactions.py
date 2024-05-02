@@ -36,7 +36,7 @@ from discord.types.snowflake import Snowflake
 from . import utils
 from .enums import try_enum, Locale, InteractionType, InteractionResponseType
 from .errors import InteractionResponded, HTTPException, ClientException, DiscordException
-from .flags import AppIntegrationType, MessageFlags
+from .flags import MessageFlags
 from .channel import ChannelType
 from ._types import ClientT
 from .sku import Entitlement
